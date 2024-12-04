@@ -3,8 +3,7 @@ import re
 from utils import get_file_output
 
 FUNC_RE = re.compile(r"mul\((?P<x>\d{1,3}),(?P<y>\d{1,3})\)")
-DONT_RE = re.compile(r"(don't\(\))")
-DO_RE = re.compile(r"(do\(\))")
+SPLITTER_RE = re.compile(r"(don't\(\)|do\(\))")
 
 
 output = get_file_output("day3.txt")
@@ -25,14 +24,24 @@ def part_one():
 
 def part_two():
     total = 0
+    new_full_txt = ""
+    enabled = True
     for txt in lines:
-        donts = DONT_RE.split(txt)
-        for dont in donts:
-            dos = DO_RE.split(dont)
-        ...
-        # results = re.findall(FUNC_RE, replaced)
-        # for result in results:
-        #     total += int(result[0]) * int(result[1])
+        tokens = SPLITTER_RE.split(txt)
+        for token in tokens:
+            if token == "don't()":
+                enabled = False
+            elif token == "do()":
+                enabled = True
+                continue
+
+            if enabled:
+                new_full_txt += token
+                continue
+
+    results = re.findall(FUNC_RE, new_full_txt)
+    for result in results:
+        total += int(result[0]) * int(result[1])
 
     print(total)
 
